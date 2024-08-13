@@ -11,7 +11,7 @@
 namespace fs = std::filesystem;
 using namespace std;
 
-int calc(const string& inputfilename, const string& outputfilename) {
+static int calc(const string& inputfilename, const string& outputfilename) {
 
 	ifstream cin(inputfilename);
 	ifstream cin2(outputfilename);
@@ -45,6 +45,9 @@ int calc(const string& inputfilename, const string& outputfilename) {
 	else {
 		cout << "sum : " << sum << " answer : " << answer << " incorrect" << endl;
 	}
+
+	cin.close();
+	cin2.close();
 
 	return 0;
 }

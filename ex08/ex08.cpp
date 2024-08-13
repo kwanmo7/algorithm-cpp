@@ -11,54 +11,58 @@
 namespace fs = std::filesystem;
 using namespace std;
 
-static int calc(const string& inputfilename, const string& outputfilename) {
+static int calc(const string& inputfilename, const string& answerfilename) {
 
-	ifstream cin(inputfilename);
-	ifstream cin2(outputfilename);
-	if (!cin) {
+	ifstream inputFile(inputfilename);
+	ifstream answerFile(answerfilename);
+	if (!inputFile) {
 		cerr << "Error open file : " << inputfilename << endl;
 		return 0;
 	}
-	if (!cin2) {
-		cerr << "Error open file : " << outputfilename << endl;
+	if (!answerFile) {
+		cerr << "Error open file : " << answerfilename << endl;
 		return 0;
 	}
 
-	int n, m = 0;
-	int sum = 0;
+	string input;
+	getline(inputFile, input);
+
+	string strYes = "YES";
+	string strNo = "NO";
 
 	string answer;
-	cin >> n;
-	cin >> m;
-	getline(cin2, answer);
+	answer.clear();
+	getline(answerFile, answer);
 
-	string ans = "";
+	int cnt = 0, i = 0;
 
-	cout << "Input : " << n << " , " << m << endl;
+	for (i = 0; i < input.size(); i++) {
+		if (input.at(0) == ')') {
+			break;
+		}
 
-	for (int i = n; i <= m; i++) {
-		sum += i;
-		if (i < m) {
-			ans.append(to_string(i) + " + ");
+		if ( i == input.size() -1 && cnt < 0 ) {
+			break;
+		}
+
+		if (input.at(i) == '(') {
+			cnt++;
 		}
 		else {
-			ans.append(to_string(i) + " = " + to_string(sum));
+			cnt--;
 		}
 	}
 
-	if (ans.compare(answer) == 0) {
-		cout << "ans : " << ans << endl;
-		cout << "answer : " << answer << endl;
-		cout << "correct" << endl;
+	if ( cnt == 0 && i != 0) {
+		cout << "result : " << strYes << " answer : " << answer << endl;
 	}
 	else {
-		cout << "ans : " << ans << endl;
-		cout << "answer : " << answer << endl;
-		cout << "incorrect" << endl;
+		cout << "result : " << strNo << " answer : " << answer << endl;
+
 	}
-	
-	cin.close();
-	cin2.close();
+
+	inputFile.close();
+	answerFile.close();
 
 	return 0;
 }
@@ -68,7 +72,7 @@ int main() {
 
 	fs::path directory = "./input";
 	vector<string> inputfiles;
-	vector<string> outputfiles;
+	vector<string> answerfiles;
 
 	try {
 		for (const auto& entry : fs::directory_iterator(directory)) {
@@ -78,7 +82,7 @@ int main() {
 					inputfiles.push_back(entry.path().string());
 				}
 				if (name.find("out") == 0 && name.length() > 4 && name.substr(name.length() - 4) == ".txt") {
-					outputfiles.push_back(entry.path().string());
+					answerfiles.push_back(entry.path().string());
 				}
 			}
 		}
@@ -94,10 +98,10 @@ int main() {
 	}
 
 	sort(inputfiles.begin(), inputfiles.end());
-	sort(outputfiles.begin(), outputfiles.end());
+	sort(answerfiles.begin(), answerfiles.end());
 
 	for (int i = 0; i < inputfiles.size(); i++) {
-		calc(inputfiles.at(i), outputfiles.at(i));
+		calc(inputfiles.at(i), answerfiles.at(i));
 	}
 
 	return 0;
